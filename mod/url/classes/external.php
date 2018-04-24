@@ -129,7 +129,10 @@ class mod_url_external extends external_api {
      * @since Moodle 3.3
      */
     public static function get_urls_by_courses($courseids = array()) {
+        global $CFG;
 
+        require_once("$CFG->dirroot/mod/url/locallib.php");
+        
         $warnings = array();
         $returnedurls = array();
 
@@ -156,6 +159,10 @@ class mod_url_external extends external_api {
                 $context = context_module::instance($url->coursemodule);
                 // Entry to return.
                 $url->name = external_format_string($url->name, $context->id);
+
+                $cm = get_coursemodule_from_id('url', $url->coursemodule, 0, false, MUST_EXIST);
+                $course = get_course($url->course);
+                $url->externalurl = url_get_full_url($url, $cm, $course);
 
                 list($url->intro, $url->introformat) = external_format_text($url->intro,
                                                                 $url->introformat, $context->id, 'mod_url', 'intro', null);
